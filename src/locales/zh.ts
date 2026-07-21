@@ -25,8 +25,8 @@ export const zh = {
     active: '运行中',
     inMaintenance: '维保中',
     inactive: '已停用',
-    maintenanceCosts: '维保成本',
-    recentPriority: '近期重点事项',
+    expenseOverview: '费用总览',
+    recentExpenses: '近期费用',
     viewAllLogs: '查看所有日志',
     months: ['一月', '二月', '三月', '四月', '五月', '六月']
   },

@@ -25,8 +25,8 @@ export const en = {
     active: 'Active',
     inMaintenance: 'In Maintenance',
     inactive: 'Inactive',
-    maintenanceCosts: 'Maintenance Costs',
-    recentPriority: 'Recent Priority',
+    expenseOverview: 'Expense Overview',
+    recentExpenses: 'Recent Expenses',
     viewAllLogs: 'VIEW ALL LOGS',
     months: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun']
   },
