@@ -13,7 +13,7 @@ const pdfParse = (pdfParseModule as any).default || pdfParseModule;
 import db, { initDb } from './database.js';
 
 // Initialize the Database
-initDb();
+const dbReady = initDb();
 
 const JWT_SECRET = process.env.JWT_SECRET || 'super_secret_key_default';
 if (JWT_SECRET === 'super_secret_key_default' && process.env.NODE_ENV === 'production') {
@@ -421,6 +421,8 @@ app.use((err: any, req: Request, res: Response, next: NextFunction) => {
 
 // Export function to start
 async function startServer() {
+  await dbReady;
+  console.log('Database ready');
   if (process.env.NODE_ENV !== 'production') {
     const vite = await createViteServer({
       server: { middlewareMode: true },
