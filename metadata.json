@@ -1,0 +1,6 @@
+{
+  "name": "Vehicle Management System",
+  "description": "A comprehensive dashboard for managing a fleet of vehicles including status tracking, maintenance schedules, and analytics.",
+  "requestFramePermissions": [],
+  "majorCapabilities": []
+}
