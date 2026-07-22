@@ -6,6 +6,8 @@ export const en = {
     usageLogs: 'Usage Logs',
     expenses: 'Expenses',
     reports: 'Reports',
+    fuel: 'Fuel',
+    reminders: 'Reminders',
     settings: 'Settings',
   },
   sidebar: {
@@ -25,8 +27,8 @@ export const en = {
     active: 'Active',
     inMaintenance: 'In Maintenance',
     inactive: 'Inactive',
-    expenseOverview: 'Expense Overview',
-    recentExpenses: 'Recent Expenses',
+    maintenanceCosts: 'Maintenance Costs',
+    recentPriority: 'Recent Priority',
     viewAllLogs: 'VIEW ALL LOGS',
     months: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun']
   },

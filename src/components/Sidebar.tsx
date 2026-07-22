@@ -1,5 +1,5 @@
 import { Link, useLocation } from 'react-router-dom';
-import { LayoutDashboard, Car, Wrench, Settings, LogOut, ClipboardList, Wallet, BarChart, Bot, Users } from 'lucide-react';
+import { LayoutDashboard, Car, Wrench, Settings, LogOut, ClipboardList, Wallet, BarChart, Bot, Users, Fuel, Bell } from 'lucide-react';
 import { cn } from '../lib/utils';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useAuth } from '../contexts/AuthContext';
@@ -16,6 +16,8 @@ export function Sidebar() {
     { name: language === 'zh' ? 'AI分析' : 'AI Analysis', href: '/ai-analysis', icon: Bot },
     { name: t.nav.usageLogs, href: '/usage', icon: ClipboardList },
     { name: t.nav.expenses, href: '/expenses', icon: Wallet },
+    { name: t.nav.fuel, href: '/fuel', icon: Fuel },
+    { name: t.nav.reminders, href: '/reminders', icon: Bell },
     { name: t.nav.reports, href: '/reports', icon: BarChart },
   ];
 

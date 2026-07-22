@@ -13,7 +13,7 @@ const pdfParse = (pdfParseModule as any).default || pdfParseModule;
 import db, { initDb } from './database.js';
 
 // Initialize the Database
-initDb();
+const dbReady = initDb();
 
 const JWT_SECRET = process.env.JWT_SECRET || 'super_secret_key_default';
 if (JWT_SECRET === 'super_secret_key_default' && process.env.NODE_ENV === 'production') {
@@ -410,6 +410,81 @@ app.get('/api/ai-analysis/:vehicleId', authenticateToken, (req: AuthRequest, res
   return res.json({ success: true, analysis: cache.analysis_text });
 });
 
+// --- Fuel Logs API ---
+app.get('/api/fuel-logs', authenticateToken, (req: AuthRequest, res: Response) => {
+  const userId = req.user!.id;
+  const isAdmin = req.user!.role === 'admin';
+  let logs;
+  if (isAdmin) {
+    logs = db.prepare('SELECT * FROM fuel_logs ORDER BY date DESC').all();
+  } else {
+    logs = db.prepare('SELECT * FROM fuel_logs WHERE created_by = ? ORDER BY date DESC').all(userId);
+  }
+  res.json({ fuelLogs: logs.map((d: any) => ({ ...d, id: String(d.id), vehicleId: String(d.vehicleId) })) });
+});
+
+app.post('/api/fuel-logs', authenticateToken, (req: AuthRequest, res: Response) => {
+  const { vehicleId, date, liters, pricePerLiter, totalCost, isFullTank, mileage, station, notes } = req.body;
+  const userId = req.user!.id;
+  const stmt = db.prepare(`INSERT INTO fuel_logs (vehicleId, date, liters, pricePerLiter, totalCost, isFullTank, mileage, station, notes, created_by) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`);
+  const info = stmt.run(vehicleId, date, liters, pricePerLiter, totalCost, isFullTank ? 1 : 0, mileage || null, station || null, notes || null, userId);
+  res.json({ success: true, id: String(info.lastInsertRowid) });
+});
+
+app.delete('/api/fuel-logs/:id', authenticateToken, (req: AuthRequest, res: Response) => {
+  const userId = req.user!.id;
+  const logId = req.params.id;
+  if (req.user!.role !== 'admin') {
+    const v = db.prepare('SELECT created_by FROM fuel_logs WHERE id = ?').get(logId) as any;
+    if (!v || v.created_by !== userId) return res.status(403).json({ error: 'Forbidden' });
+  }
+  db.prepare('DELETE FROM fuel_logs WHERE id = ?').run(logId);
+  res.json({ success: true });
+});
+
+// --- Reminders API ---
+app.get('/api/reminders', authenticateToken, (req: AuthRequest, res: Response) => {
+  const userId = req.user!.id;
+  const isAdmin = req.user!.role === 'admin';
+  let reminders;
+  if (isAdmin) {
+    reminders = db.prepare('SELECT * FROM reminders ORDER BY dueDate ASC').all();
+  } else {
+    reminders = db.prepare('SELECT * FROM reminders WHERE created_by = ? ORDER BY dueDate ASC').all(userId);
+  }
+  res.json({ reminders: reminders.map((d: any) => ({ ...d, id: String(d.id), vehicleId: String(d.vehicleId) })) });
+});
+
+app.post('/api/reminders', authenticateToken, (req: AuthRequest, res: Response) => {
+  const { vehicleId, type, title, description, dueDate, repeatInterval } = req.body;
+  const userId = req.user!.id;
+  const stmt = db.prepare(`INSERT INTO reminders (vehicleId, type, title, description, dueDate, repeatInterval, created_by) VALUES (?, ?, ?, ?, ?, ?, ?)`);
+  const info = stmt.run(vehicleId, type, title, description || null, dueDate, repeatInterval || null, userId);
+  res.json({ success: true, id: String(info.lastInsertRowid) });
+});
+
+app.put('/api/reminders/:id', authenticateToken, (req: AuthRequest, res: Response) => {
+  const { isCompleted } = req.body;
+  const userId = req.user!.id;
+  const reminderId = req.params.id;
+  if (req.user!.role !== 'admin') {
+    const v = db.prepare('SELECT created_by FROM reminders WHERE id = ?').get(reminderId) as any;
+    if (!v || v.created_by !== userId) return res.status(403).json({ error: 'Forbidden' });
+  }
+  db.prepare('UPDATE reminders SET isCompleted = ? WHERE id = ?').run(isCompleted ? 1 : 0, reminderId);
+  res.json({ success: true });
+});
+
+app.delete('/api/reminders/:id', authenticateToken, (req: AuthRequest, res: Response) => {
+  const userId = req.user!.id;
+  const reminderId = req.params.id;
+  if (req.user!.role !== 'admin') {
+    const v = db.prepare('SELECT created_by FROM reminders WHERE id = ?').get(reminderId) as any;
+    if (!v || v.created_by !== userId) return res.status(403).json({ error: 'Forbidden' });
+  }
+  db.prepare('DELETE FROM reminders WHERE id = ?').run(reminderId);
+  res.json({ success: true });
+});
 
 app.use((err: any, req: Request, res: Response, next: NextFunction) => {
   console.error(err);
@@ -421,6 +496,8 @@ app.use((err: any, req: Request, res: Response, next: NextFunction) => {
 
 // Export function to start
 async function startServer() {
+  await dbReady;
+  console.log('Database ready');
   if (process.env.NODE_ENV !== 'production') {
     const vite = await createViteServer({
       server: { middlewareMode: true },

@@ -7,6 +7,8 @@ import { AiAnalysis } from './pages/AiAnalysis';
 import { Settings } from './pages/Settings';
 import { UsageLogs } from './pages/UsageLogs';
 import { Expenses } from './pages/Expenses';
+import { FuelLogs } from './pages/FuelLogs';
+import { Reminders } from './pages/Reminders';
 import { Reports } from './pages/Reports';
 import { Users } from './pages/Users';
 import { Login } from './pages/Login';
@@ -31,6 +33,8 @@ export default function App() {
                   <Route path="ai-analysis" element={<AiAnalysis />} />
                   <Route path="usage" element={<UsageLogs />} />
                   <Route path="expenses" element={<Expenses />} />
+                  <Route path="fuel" element={<FuelLogs />} />
+                  <Route path="reminders" element={<Reminders />} />
                   <Route path="reports" element={<Reports />} />
                   <Route path="users" element={<Users />} />
                   <Route path="settings" element={<Settings />} />

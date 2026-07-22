@@ -52,3 +52,29 @@ export interface Expense {
   amount: number;
   description: string;
 }
+
+export interface FuelLog {
+  id: string;
+  vehicleId: string;
+  date: string;
+  liters: number;
+  pricePerLiter: number;
+  totalCost: number;
+  isFullTank: boolean;
+  mileage?: number;
+  station?: string;
+  notes?: string;
+}
+
+export type ReminderType = 'maintenance' | 'insurance' | 'inspection' | 'fuel' | 'tire' | 'other';
+
+export interface Reminder {
+  id: string;
+  vehicleId: string;
+  type: ReminderType;
+  title: string;
+  description?: string;
+  dueDate: string;
+  repeatInterval?: string;
+  isCompleted: boolean;
+}
